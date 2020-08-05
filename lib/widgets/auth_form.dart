@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
-  const AuthForm({
-    Key key,
-  }) : super(key: key);
+  AuthForm(this.submitHandler, this.isLoading);
+
+  final void Function(String email, String password, String username,
+      bool isLogin, BuildContext ctx) submitHandler;
+  final bool isLoading;
 
   @override
   _AuthFormState createState() => _AuthFormState();
@@ -21,8 +23,9 @@ class _AuthFormState extends State<AuthForm> {
     FocusScope.of(context).unfocus();
 
     if (isValid) {
-      //TODO: Submit the form, talk to firebase
       _formKey.currentState.save();
+      widget.submitHandler(this._userEmail.trim(), this._userName.trim(),
+          this._userPw.trim(), this._isLogin, context);
     }
   }
 
@@ -91,28 +94,31 @@ class _AuthFormState extends State<AuthForm> {
                         SizedBox(
                           height: 15.0,
                         ),
-                        RaisedButton(
-                          onPressed: this._trySubmit,
-                          color: Theme.of(context).primaryColor,
-                          child: Text(
-                            this._isLogin ? "Login" : "Signup",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                        FlatButton(
-                          onPressed: () {
-                            setState(() {
-                              this._isLogin = !this._isLogin;
-                            });
-                          },
-                          child: Text(
-                            this._isLogin
-                                ? "Create new account"
-                                : "Login with exsisting account",
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor),
-                          ),
-                        ),
+                        !widget.isLoading
+                            ? RaisedButton(
+                                onPressed: this._trySubmit,
+                                color: Theme.of(context).primaryColor,
+                                child: Text(
+                                  this._isLogin ? "Login" : "Signup",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              )
+                            : CircularProgressIndicator(),
+                        if (!widget.isLoading)
+                          FlatButton(
+                            onPressed: () {
+                              setState(() {
+                                this._isLogin = !this._isLogin;
+                              });
+                            },
+                            child: Text(
+                              this._isLogin
+                                  ? "Create new account"
+                                  : "Login with exsisting account",
+                              style: TextStyle(
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                          )
                       ],
                     ),
                   ),

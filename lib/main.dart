@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // SCREENS
 import 'package:ChatUp/screens/auth_screen.dart';
@@ -10,6 +11,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  final fbAuth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,7 +25,15 @@ class MyApp extends StatelessWidget {
               buttonColor: Colors.green,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20.0)))),
-      home: AuthScreen(),
+      home: StreamBuilder(
+          stream: fbAuth.onAuthStateChanged,
+          builder: (ctx, snapshot) {
+            if (snapshot.hasData) {
+              return ChatScreen();
+            } else {
+              return AuthScreen();
+            }
+          }),
     );
   }
 }
