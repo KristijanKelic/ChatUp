@@ -1,4 +1,4 @@
-# ChatUp
+# chat-up
 
 A new Flutter project.
 
